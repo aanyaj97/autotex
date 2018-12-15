@@ -1,19 +1,12 @@
-# want to:
 '''
-run program to create a new latex file with
-title
-homework number
-number of questions + formatting for them
-make sure shortcuts and environments also at top
+This is a simple python script to create LaTeX files for homework assignments.
 '''
 
-import subprocess
 import os
+import sys
 
-DEFAULT_DIR = "/Users/aanya/Life/School/2018-2019/WINTER\\ 2019"
-LOOKUP_DICT = {"diffeq": ("MATH 273", "/MATH\\ 273"),\
-               "compsci": ("CMSC 122", "/CMSC\\ 122"),\
-               "stat": ("STAT 244", "/STAT\\ 244")}
+DEFAULT_DIR = "/Users/aanya/Life/School/2018-2019/WINTER 2019"
+LOOKUP_DICT = {"diffeq": "MATH 273", "compsci": "CMSC 122", "stat": "STAT 244"}
 
 def create_latex_text(class_name, hw_num, num_questions, due_date):
     header = "\\documentclass[11pt, a4paper]{article} \n" +\
@@ -24,7 +17,6 @@ def create_latex_text(class_name, hw_num, num_questions, due_date):
     "\usepackage{tabto} \n" +\
     "\usepackage[margin=1in]{geometry} \n" +\
     "\usepackage{array} \n" +\
-    "\n" +\
     "\n" +\
     "\\newcommand{\\R}{\\mathbb{R}}\n" +\
     "\\newcommand{\\N}{\\mathbb{N}}\n" +\
@@ -41,9 +33,9 @@ def create_latex_text(class_name, hw_num, num_questions, due_date):
     "\\def\\changemargin#1#2{\\list{}{\\rightmargin#2\\leftmargin#1}\\item[]} \n" +\
     "\\let\\endchangemargin=\\endlist \n" +\
     "\\DeclareUnicodeCharacter{2212}{FIX ME!!!!} \n" +\
-    "\\setlength\\parindent{0pt}"
+    "\\setlength\\parindent{0pt} \n"
 
-    title = "\\title{\\vspace{-0.25in}" + class_name + "HW " + str(hw_num) +"} \n" +\
+    title = "\\title{\\vspace{-0.25in}" + class_name + " HW " + str(hw_num) +"} \n" +\
             "\\author{Aanya Jhaveri} \n" +\
             "\\date{Due " + due_date + "}"
 
@@ -60,21 +52,31 @@ def create_latex_text(class_name, hw_num, num_questions, due_date):
 
     return header + title + document
 
+
 def create_file(class_name, hw_num, num_questions, due_date):
     assert class_name in LOOKUP_DICT.keys()
 
     hw_name = "HW" + str(hw_num)
 
-    folder_path = DEFAULT_DIR + LOOKUP_DICT[class_name][1] + "/" + hw_name
-    hw_text = create_latex_text(LOOKUP_DICT[class_name][0], hw_num, num_questions,\
+    folder_path = DEFAULT_DIR + "/"+ LOOKUP_DICT[class_name] + "/" + hw_name + "/"
+    hw_text = create_latex_text(LOOKUP_DICT[class_name], hw_num, num_questions,\
                                 due_date)
 
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
-        subprocess.call(["cd", folder_path])
 
-    f = open(hw_name + ".tex", "w+")
+    os.chdir(folder_path)
+
+
+    f = open(folder_path + hw_name + ".tex", "w+")
     f.write(hw_text)
     f.close()
 
-create_file("diffeq", 1, 2, "December 16, 2018")
+
+if __name__ == '__main__':
+    class_name = str(sys.stdin.readline().strip())
+    hw_num = int(sys.stdin.readline().strip())
+    num_questions = int(sys.stdin.readline().strip())
+    due_date = str(sys.stdin.readline().strip())
+
+    create_file(class_name, hw_num, num_questions, due_date)
